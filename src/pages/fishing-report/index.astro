@@ -1,17 +1,33 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import { getWeather } from '../../lib/weather';
+
+export const prerender = false;
+
+// Fetch live weather data
+const weather = await getWeather();
+
+// Manual conditions (update these in admin or via API later)
+const manualConditions = {
+  waterTemp: '58°F',
+  clarity: 'Good (4-6 ft visibility)',
+  level: 'Normal',
+};
 
 // Sample fishing report data - will be replaced with content collections
 const currentReport = {
-  date: 'September 28, 2026',
+  date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
   author: 'Jake Thompson',
   summary: 'Walleye action has been excellent this week with cooler temperatures pushing fish into shallower waters. Best action near Garrison and Isle areas. Northern pike are also active with several catches over 30 inches reported.',
   conditions: {
-    waterTemp: '58°F',
-    clarity: 'Good (4-6 ft visibility)',
-    level: 'Normal',
-    weather: 'Partly cloudy, light winds from the NW',
+    waterTemp: manualConditions.waterTemp,
+    clarity: manualConditions.clarity,
+    level: manualConditions.level,
+    weather: weather ? weather.summary : 'Check local forecast',
+    weatherIcon: weather ? weather.icon : '\u{1F324}\uFE0F',
+    airTemp: weather ? `${weather.temperature}°F` : null,
+    wind: weather ? `${weather.windSpeed} mph ${weather.windDirection}` : null,
   },
   species: [
     {
@@ -89,26 +105,43 @@ const previousReports = [
             <h2>Current Conditions</h2>
             <div class="conditions-grid">
               <div class="condition-card">
-                <span class="condition-card__icon">🌡️</span>
+                <span class="condition-card__icon">{currentReport.conditions.weatherIcon}</span>
+                <span class="condition-card__label">Weather</span>
+                <span class="condition-card__value">{currentReport.conditions.weather}</span>
+              </div>
+              {currentReport.conditions.airTemp && (
+                <div class="condition-card">
+                  <span class="condition-card__icon">\u{1F321}\uFE0F</span>
+                  <span class="condition-card__label">Air Temp</span>
+                  <span class="condition-card__value">{currentReport.conditions.airTemp}</span>
+                </div>
+              )}
+              {currentReport.conditions.wind && (
+                <div class="condition-card">
+                  <span class="condition-card__icon">\u{1F4A8}</span>
+                  <span class="condition-card__label">Wind</span>
+                  <span class="condition-card__value">{currentReport.conditions.wind}</span>
+                </div>
+              )}
+              <div class="condition-card">
+                <span class="condition-card__icon">\u{1F30A}</span>
                 <span class="condition-card__label">Water Temp</span>
                 <span class="condition-card__value">{currentReport.conditions.waterTemp}</span>
               </div>
               <div class="condition-card">
-                <span class="condition-card__icon">👁️</span>
+                <span class="condition-card__icon">\u{1F441}\uFE0F</span>
                 <span class="condition-card__label">Clarity</span>
                 <span class="condition-card__value">{currentReport.conditions.clarity}</span>
               </div>
               <div class="condition-card">
-                <span class="condition-card__icon">📊</span>
+                <span class="condition-card__icon">\u{1F4CA}</span>
                 <span class="condition-card__label">Lake Level</span>
                 <span class="condition-card__value">{currentReport.conditions.level}</span>
               </div>
-              <div class="condition-card">
-                <span class="condition-card__icon">🌤️</span>
-                <span class="condition-card__label">Weather</span>
-                <span class="condition-card__value">{currentReport.conditions.weather}</span>
-              </div>
             </div>
+            {weather && (
+              <p class="conditions-updated">Weather updated live from OpenWeather</p>
+            )}
           </section>
 
           <!-- Species Reports -->
@@ -277,7 +310,7 @@ const previousReports = [
   /* Conditions */
   .conditions-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-md);
   }
 
@@ -305,6 +338,13 @@ const previousReports = [
     font-family: var(--font-heading);
     font-weight: 600;
     font-size: 1rem;
+  }
+
+  .conditions-updated {
+    margin-top: var(--space-md);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
   }
 
   /* Species */
@@ -544,6 +584,12 @@ const previousReports = [
 
     .report-sidebar {
       position: static;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .conditions-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
