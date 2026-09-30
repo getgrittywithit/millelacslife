@@ -1,20 +1,20 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
+export const prerender = false;
 
-// Get all businesses from content collection
-const allBusinesses = await getCollection('businesses');
+import Layout from '../../layouts/Layout.astro';
+import { getBusinesses, getFeaturedBusinesses, type Business } from '../../lib/supabase';
+
+// Get all businesses from Supabase
+const allBusinesses = await getBusinesses();
+const featuredBusinesses = await getFeaturedBusinesses();
 
 // Group by category
 const businessesByCategory = allBusinesses.reduce((acc, business) => {
-  const cat = business.data.category;
+  const cat = business.category;
   if (!acc[cat]) acc[cat] = [];
   acc[cat].push(business);
   return acc;
-}, {} as Record<string, typeof allBusinesses>);
-
-// Featured businesses
-const featuredBusinesses = allBusinesses.filter(b => b.data.featured);
+}, {} as Record<string, Business[]>);
 
 const categories = [
   {
@@ -116,15 +116,15 @@ const categories = [
 
         <div class="grid grid--3">
           {featuredBusinesses.map((business) => (
-            <a href={`/directory/${business.data.category}/${business.id}`} class="listing-card listing-card--featured">
+            <a href={`/directory/${business.category}/${business.slug}`} class="listing-card listing-card--featured">
               <div class="listing-card__image">
                 <span class="listing-card__badge">Featured</span>
               </div>
               <div class="listing-card__content">
-                <span class="listing-card__category">{business.data.category}</span>
-                <h3>{business.data.name}</h3>
-                <p class="listing-card__location">{business.data.city}</p>
-                <p>{business.data.description}</p>
+                <span class="listing-card__category">{business.category}</span>
+                <h3>{business.name}</h3>
+                <p class="listing-card__location">{business.city}</p>
+                <p>{business.description}</p>
               </div>
             </a>
           ))}
