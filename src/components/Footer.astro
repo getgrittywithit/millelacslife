@@ -1,0 +1,346 @@
+---
+const currentYear = new Date().getFullYear();
+
+const directoryLinks = [
+  { label: 'Resorts', href: '/directory/resorts' },
+  { label: 'Restaurants', href: '/directory/restaurants' },
+  { label: 'Fishing Guides', href: '/directory/guides' },
+  { label: 'Boat Rentals', href: '/directory/boat-rentals' },
+  { label: 'Bait Shops', href: '/directory/bait-shops' },
+];
+
+const resourceLinks = [
+  { label: 'Fishing Report', href: '/fishing-report' },
+  { label: 'Visitor Guide', href: '/guides/visitor-guide' },
+  { label: 'Ice Fishing Guide', href: '/guides/ice-fishing' },
+  { label: 'Events Calendar', href: '/events' },
+  { label: 'Boat Launches', href: '/guides/boat-launches' },
+];
+
+const aboutLinks = [
+  { label: 'About Us', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Advertise', href: '/advertise' },
+  { label: 'Submit a Listing', href: '/submit-listing' },
+];
+---
+
+<footer class="footer">
+  <div class="footer__main">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo">
+            <span class="footer__logo-icon">🌲</span>
+            <span class="footer__logo-text">Mille Lacs Life</span>
+          </a>
+          <p class="footer__description">
+            Your complete guide to Mille Lacs Lake. Whether you're planning a vacation, looking for the best fishing spots, or calling the lake home, we've got you covered.
+          </p>
+          <div class="footer__newsletter" data-newsletter>
+            <h4>Get the Weekly Fishing Report</h4>
+            <form class="footer__newsletter-form" data-source="footer">
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+                class="footer__newsletter-input"
+                autocomplete="email"
+              />
+              <button type="submit" class="btn btn--accent">
+                <span class="btn-text">Subscribe</span>
+                <span class="btn-loading" hidden>...</span>
+              </button>
+            </form>
+            <p class="footer__newsletter-message" hidden></p>
+          </div>
+        </div>
+
+        <div class="footer__links">
+          <div class="footer__link-group">
+            <h4>Directory</h4>
+            <ul>
+              {directoryLinks.map((link) => (
+                <li><a href={link.href}>{link.label}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="footer__link-group">
+            <h4>Resources</h4>
+            <ul>
+              {resourceLinks.map((link) => (
+                <li><a href={link.href}>{link.label}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="footer__link-group">
+            <h4>About</h4>
+            <ul>
+              {aboutLinks.map((link) => (
+                <li><a href={link.href}>{link.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container">
+      <p>&copy; {currentYear} Mille Lacs Life. All rights reserved.</p>
+      <nav class="footer__legal">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Service</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--forest-dark);
+    color: var(--cream);
+  }
+
+  .footer__main {
+    padding: var(--space-3xl) 0;
+  }
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr;
+    gap: var(--space-3xl);
+  }
+
+  .footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--white);
+    text-decoration: none;
+    margin-bottom: var(--space-md);
+  }
+
+  .footer__logo:hover {
+    text-decoration: none;
+  }
+
+  .footer__logo-icon {
+    font-size: 1.5rem;
+  }
+
+  .footer__logo-text {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .footer__description {
+    color: var(--cream-dark);
+    margin-bottom: var(--space-xl);
+    line-height: 1.6;
+  }
+
+  .footer__newsletter h4 {
+    color: var(--white);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .footer__newsletter-form {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .footer__newsletter-input {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+
+  .footer__newsletter-input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .footer__newsletter-input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .footer__newsletter-message {
+    margin-top: var(--space-sm);
+    font-size: 0.875rem;
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+  }
+
+  .footer__newsletter-message--success {
+    background-color: rgba(212, 237, 218, 0.9);
+    color: #155724;
+  }
+
+  .footer__newsletter-message--error {
+    background-color: rgba(248, 215, 218, 0.9);
+    color: #721c24;
+  }
+
+  .footer__links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .footer__link-group h4 {
+    color: var(--white);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .footer__link-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__link-group li {
+    margin-bottom: var(--space-sm);
+  }
+
+  .footer__link-group a {
+    color: var(--cream-dark);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    font-size: 0.9rem;
+  }
+
+  .footer__link-group a:hover {
+    color: var(--white);
+    text-decoration: underline;
+  }
+
+  .footer__bottom {
+    background: rgba(0, 0, 0, 0.2);
+    padding: var(--space-md) 0;
+  }
+
+  .footer__bottom .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer__bottom p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--cream-dark);
+  }
+
+  .footer__legal {
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .footer__legal a {
+    color: var(--cream-dark);
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .footer__legal a:hover {
+    color: var(--white);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-2xl);
+    }
+
+    .footer__links {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer__newsletter-form {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .footer__links {
+      grid-template-columns: 1fr;
+    }
+
+    .footer__bottom .container {
+      flex-direction: column;
+      gap: var(--space-sm);
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  const footerForm = document.querySelector('.footer__newsletter form');
+
+  footerForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form = e.target as HTMLFormElement;
+    const emailInput = form.querySelector('input[type="email"]') as HTMLInputElement;
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const btnText = submitBtn.querySelector('.btn-text') as HTMLElement;
+    const btnLoading = submitBtn.querySelector('.btn-loading') as HTMLElement;
+    const messageEl = document.querySelector('.footer__newsletter-message') as HTMLElement;
+    const source = form.dataset.source || 'footer';
+
+    // Reset
+    messageEl.hidden = true;
+    messageEl.className = 'footer__newsletter-message';
+
+    // Loading state
+    emailInput.disabled = true;
+    submitBtn.disabled = true;
+    btnText.hidden = true;
+    btnLoading.hidden = false;
+
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput.value, source }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        messageEl.textContent = data.message || 'Subscribed!';
+        messageEl.classList.add('footer__newsletter-message--success');
+        emailInput.value = '';
+      } else {
+        messageEl.textContent = data.error || 'Something went wrong.';
+        messageEl.classList.add('footer__newsletter-message--error');
+      }
+
+      messageEl.hidden = false;
+    } catch (error) {
+      messageEl.textContent = 'Network error. Please try again.';
+      messageEl.classList.add('footer__newsletter-message--error');
+      messageEl.hidden = false;
+    } finally {
+      emailInput.disabled = false;
+      submitBtn.disabled = false;
+      btnText.hidden = false;
+      btnLoading.hidden = true;
+    }
+  });
+</script>

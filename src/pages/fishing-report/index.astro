@@ -1,0 +1,561 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+
+// Sample fishing report data - will be replaced with content collections
+const currentReport = {
+  date: 'September 28, 2026',
+  author: 'Jake Thompson',
+  summary: 'Walleye action has been excellent this week with cooler temperatures pushing fish into shallower waters. Best action near Garrison and Isle areas. Northern pike are also active with several catches over 30 inches reported.',
+  conditions: {
+    waterTemp: '58°F',
+    clarity: 'Good (4-6 ft visibility)',
+    level: 'Normal',
+    weather: 'Partly cloudy, light winds from the NW',
+  },
+  species: [
+    {
+      name: 'Walleye',
+      status: 'Excellent',
+      details: 'Walleye are biting aggressively on jigs tipped with minnows in 12-18 feet of water. Early morning and late evening have been the most productive. Focus on rocky points and the mud flats near Garrison.',
+      bestBait: 'Jig and minnow, Lindy rig with leeches',
+      bestDepth: '12-18 feet',
+    },
+    {
+      name: 'Northern Pike',
+      status: 'Good',
+      details: 'Pike have moved into shallower bays with the cooling water. Spinnerbaits and large minnow baits are producing well. Several fish over 30 inches reported this week.',
+      bestBait: 'Spinnerbaits, large sucker minnows',
+      bestDepth: '6-12 feet',
+    },
+    {
+      name: 'Smallmouth Bass',
+      status: 'Fair',
+      details: 'Smallmouth action has slowed with cooler temps but fish can still be found around rocky structure. Try tube jigs or crayfish imitations.',
+      bestBait: 'Tube jigs, crayfish patterns',
+      bestDepth: '8-15 feet',
+    },
+  ],
+  hotSpots: [
+    { name: 'Garrison Reef', description: 'Great walleye action morning and evening' },
+    { name: 'Wigwam Bay', description: 'Pike feeding heavily in the shallows' },
+    { name: 'Myr-Mar Beach', description: 'Consistent walleye on the sand/rock transition' },
+    { name: 'Rocky Reef (north of Isle)', description: 'Mixed bag - walleye and smallmouth' },
+  ],
+  tips: [
+    'With cooler water temps, slow down your presentation',
+    'Early morning bite has been the most consistent for walleye',
+    'Live bait is outperforming artificials this week',
+    'Check MN DNR regulations - some slot limits in effect',
+  ],
+};
+
+const previousReports = [
+  { date: 'September 21, 2026', summary: 'Transition week with cooling temps...', href: '/fishing-report/2026-09-21' },
+  { date: 'September 14, 2026', summary: 'Summer pattern holding with walleye deep...', href: '/fishing-report/2026-09-14' },
+  { date: 'September 7, 2026', summary: 'Labor Day weekend fishing was excellent...', href: '/fishing-report/2026-09-07' },
+];
+---
+
+<Layout
+  title="Fishing Report"
+  description="Weekly Mille Lacs Lake fishing report with current conditions, hot spots, and expert tips for walleye, northern pike, and bass fishing."
+>
+  <article class="fishing-report">
+    <!-- Header -->
+    <header class="report-header">
+      <div class="container">
+        <span class="badge badge--fishing">Latest Report</span>
+        <h1>Mille Lacs Lake Fishing Report</h1>
+        <div class="report-meta">
+          <span class="report-meta__date">{currentReport.date}</span>
+          <span class="report-meta__author">By {currentReport.author}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="report-layout">
+        <!-- Main Content -->
+        <div class="report-main">
+          <!-- Summary -->
+          <section class="report-section">
+            <h2>This Week's Overview</h2>
+            <p class="report-summary">{currentReport.summary}</p>
+          </section>
+
+          <!-- Conditions -->
+          <section class="report-section conditions-section">
+            <h2>Current Conditions</h2>
+            <div class="conditions-grid">
+              <div class="condition-card">
+                <span class="condition-card__icon">🌡️</span>
+                <span class="condition-card__label">Water Temp</span>
+                <span class="condition-card__value">{currentReport.conditions.waterTemp}</span>
+              </div>
+              <div class="condition-card">
+                <span class="condition-card__icon">👁️</span>
+                <span class="condition-card__label">Clarity</span>
+                <span class="condition-card__value">{currentReport.conditions.clarity}</span>
+              </div>
+              <div class="condition-card">
+                <span class="condition-card__icon">📊</span>
+                <span class="condition-card__label">Lake Level</span>
+                <span class="condition-card__value">{currentReport.conditions.level}</span>
+              </div>
+              <div class="condition-card">
+                <span class="condition-card__icon">🌤️</span>
+                <span class="condition-card__label">Weather</span>
+                <span class="condition-card__value">{currentReport.conditions.weather}</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Species Reports -->
+          <section class="report-section">
+            <h2>Species Report</h2>
+            <div class="species-list">
+              {currentReport.species.map((species) => (
+                <div class="species-card">
+                  <div class="species-card__header">
+                    <h3>{species.name}</h3>
+                    <span class:list={[
+                      'species-status',
+                      `species-status--${species.status.toLowerCase()}`
+                    ]}>
+                      {species.status}
+                    </span>
+                  </div>
+                  <p>{species.details}</p>
+                  <div class="species-card__details">
+                    <div>
+                      <strong>Best Bait:</strong> {species.bestBait}
+                    </div>
+                    <div>
+                      <strong>Best Depth:</strong> {species.bestDepth}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <!-- Hot Spots -->
+          <section class="report-section">
+            <h2>Hot Spots This Week</h2>
+            <div class="hotspots-grid">
+              {currentReport.hotSpots.map((spot, index) => (
+                <div class="hotspot-card">
+                  <span class="hotspot-card__number">{index + 1}</span>
+                  <div class="hotspot-card__content">
+                    <h4>{spot.name}</h4>
+                    <p>{spot.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <!-- Tips -->
+          <section class="report-section">
+            <h2>Pro Tips</h2>
+            <ul class="tips-list">
+              {currentReport.tips.map((tip) => (
+                <li>{tip}</li>
+              ))}
+            </ul>
+          </section>
+
+          <!-- Regulations Reminder -->
+          <section class="report-section regulations">
+            <h3>Regulations Reminder</h3>
+            <p>
+              Always check current MN DNR fishing regulations before heading out.
+              Mille Lacs has specific slot limits for walleye that change seasonally.
+              <a href="https://www.dnr.state.mn.us/fishing/mille_lacs.html" target="_blank" rel="noopener">
+                View current regulations →
+              </a>
+            </p>
+          </section>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="report-sidebar">
+          <NewsletterSignup
+            title="Get Weekly Reports"
+            description="Never miss a fishing report. Get it delivered to your inbox every Friday morning."
+            buttonText="Subscribe Free"
+          />
+
+          <div class="sidebar-section">
+            <h3>Previous Reports</h3>
+            <ul class="previous-reports">
+              {previousReports.map((report) => (
+                <li>
+                  <a href={report.href}>
+                    <span class="previous-reports__date">{report.date}</span>
+                    <span class="previous-reports__summary">{report.summary}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href="/fishing-report/archive" class="btn btn--outline btn--small">
+              View All Reports
+            </a>
+          </div>
+
+          <div class="sidebar-section sidebar-ad">
+            <span class="sidebar-ad__label">Featured Resort</span>
+            <div class="sidebar-ad__content">
+              <h4>McQuoid's Inn</h4>
+              <p>Premier fishing resort with expert guides and launch service.</p>
+              <a href="/directory/resorts/mcquoids-inn" class="btn btn--primary btn--small">
+                Learn More
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .fishing-report {
+    padding-bottom: var(--space-3xl);
+  }
+
+  .report-header {
+    background: linear-gradient(135deg, var(--forest-dark) 0%, var(--lake-deep) 100%);
+    color: var(--white);
+    padding: var(--space-3xl) 0;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .report-header h1 {
+    color: var(--white);
+    margin: var(--space-md) 0;
+  }
+
+  .report-meta {
+    display: flex;
+    gap: var(--space-lg);
+    opacity: 0.9;
+    font-size: 0.95rem;
+  }
+
+  .report-meta__date {
+    font-weight: 600;
+  }
+
+  .report-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  .report-section {
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+    border-bottom: 1px solid var(--cream-dark);
+  }
+
+  .report-section:last-child {
+    border-bottom: none;
+  }
+
+  .report-section h2 {
+    margin-bottom: var(--space-lg);
+  }
+
+  .report-summary {
+    font-size: 1.125rem;
+    line-height: 1.8;
+  }
+
+  /* Conditions */
+  .conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .condition-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-lg);
+    background: var(--cream-dark);
+    border-radius: var(--radius-md);
+  }
+
+  .condition-card__icon {
+    font-size: 1.5rem;
+  }
+
+  .condition-card__label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+
+  .condition-card__value {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  /* Species */
+  .species-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .species-card {
+    padding: var(--space-lg);
+    background: var(--cream-dark);
+    border-radius: var(--radius-md);
+  }
+
+  .species-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+  }
+
+  .species-card__header h3 {
+    margin: 0;
+  }
+
+  .species-status {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .species-status--excellent {
+    background: var(--forest-medium);
+    color: var(--white);
+  }
+
+  .species-status--good {
+    background: var(--lake-medium);
+    color: var(--white);
+  }
+
+  .species-status--fair {
+    background: var(--wood-light);
+    color: var(--charcoal);
+  }
+
+  .species-card__details {
+    display: flex;
+    gap: var(--space-xl);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+  }
+
+  /* Hot Spots */
+  .hotspots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .hotspot-card {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--cream-dark);
+    border-radius: var(--radius-md);
+  }
+
+  .hotspot-card__number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .hotspot-card__content h4 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 1rem;
+  }
+
+  .hotspot-card__content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  /* Tips */
+  .tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tips-list li {
+    position: relative;
+    padding: var(--space-md) var(--space-md) var(--space-md) var(--space-xl);
+    background: var(--cream-dark);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  .tips-list li::before {
+    content: '💡';
+    position: absolute;
+    left: var(--space-md);
+    top: var(--space-md);
+  }
+
+  /* Regulations */
+  .regulations {
+    background: #fff3cd;
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--wood-medium);
+  }
+
+  .regulations h3 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--wood-dark);
+  }
+
+  .regulations p {
+    margin: 0;
+  }
+
+  /* Sidebar */
+  .report-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    position: sticky;
+    top: 100px;
+  }
+
+  .sidebar-section {
+    background: var(--cream-dark);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .sidebar-section h3 {
+    margin: 0 0 var(--space-md) 0;
+    font-size: 1rem;
+  }
+
+  .previous-reports {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .previous-reports li {
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .previous-reports li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .previous-reports a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    color: var(--text);
+  }
+
+  .previous-reports__date {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .previous-reports__summary {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sidebar-ad {
+    background: var(--white);
+    border: 2px solid var(--primary);
+  }
+
+  .sidebar-ad__label {
+    display: inline-block;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 0.7rem;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .sidebar-ad h4 {
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .sidebar-ad p {
+    font-size: 0.9rem;
+    margin: 0 0 var(--space-md) 0;
+    color: var(--text-muted);
+  }
+
+  .btn--small {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.875rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 1000px) {
+    .report-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .report-sidebar {
+      position: static;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .conditions-grid,
+    .hotspots-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .species-card__details {
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+  }
+</style>

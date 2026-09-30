@@ -1,0 +1,520 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+
+// Sample data - will be replaced with content collections
+const latestFishingReport = {
+  date: 'September 28, 2026',
+  summary: 'Walleye action has been excellent this week with cooler temperatures pushing fish into shallower waters. Best action near Garrison and Isle areas.',
+  conditions: {
+    waterTemp: '58°F',
+    clarity: 'Good',
+    level: 'Normal',
+  },
+  topSpots: ['Garrison Reef', 'Wigwam Bay', 'Myr-Mar Beach'],
+};
+
+const featuredBusinesses = [
+  {
+    name: "McQuoid's Inn",
+    category: 'Resort',
+    description: 'Full-service resort with cabins, fishing packages, and boat rentals.',
+    href: '/directory/resorts/mcquoids-inn',
+  },
+  {
+    name: "Nitti's Hunters Point",
+    category: 'Resort',
+    description: 'Premier walleye fishing destination with expert guides.',
+    href: '/directory/resorts/nittis-hunters-point',
+  },
+  {
+    name: 'Twin Pines Resort',
+    category: 'Resort',
+    description: 'Family-friendly resort on the south shore of Mille Lacs.',
+    href: '/directory/resorts/twin-pines',
+  },
+];
+
+const upcomingEvents = [
+  {
+    title: 'Fall Walleye Tournament',
+    date: 'October 12, 2026',
+    location: 'Garrison Bay',
+    href: '/events/fall-walleye-tournament',
+  },
+  {
+    title: 'Oktoberfest at Mille Lacs',
+    date: 'October 5, 2026',
+    location: 'Isle Community Center',
+    href: '/events/oktoberfest',
+  },
+];
+---
+
+<Layout title="Home">
+  <!-- Hero Section -->
+  <section class="hero" style="background-image: url('/images/hero-lake.jpg');">
+    <div class="container">
+      <div class="hero__content">
+        <h1>Your Guide to Mille Lacs Lake</h1>
+        <p>
+          Everything you need for the perfect lake vacation or lakeside living.
+          Fishing reports, local businesses, events, and insider tips.
+        </p>
+        <div class="hero__actions">
+          <a href="/fishing-report" class="btn btn--accent btn--large">
+            Latest Fishing Report
+          </a>
+          <a href="/guides/visitor-guide" class="btn btn--outline btn--large" style="border-color: white; color: white;">
+            Plan Your Visit
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fishing Report Feature -->
+  <section class="fishing-feature">
+    <div class="container">
+      <div class="fishing-feature__grid">
+        <div class="fishing-feature__content">
+          <span class="badge badge--fishing">Latest Report</span>
+          <h2>Mille Lacs Fishing Report</h2>
+          <p class="fishing-feature__date">{latestFishingReport.date}</p>
+          <p class="fishing-feature__summary">{latestFishingReport.summary}</p>
+
+          <div class="fishing-feature__conditions">
+            <div class="condition">
+              <span class="condition__label">Water Temp</span>
+              <span class="condition__value">{latestFishingReport.conditions.waterTemp}</span>
+            </div>
+            <div class="condition">
+              <span class="condition__label">Clarity</span>
+              <span class="condition__value">{latestFishingReport.conditions.clarity}</span>
+            </div>
+            <div class="condition">
+              <span class="condition__label">Level</span>
+              <span class="condition__value">{latestFishingReport.conditions.level}</span>
+            </div>
+          </div>
+
+          <div class="fishing-feature__spots">
+            <h4>Hot Spots This Week:</h4>
+            <ul>
+              {latestFishingReport.topSpots.map((spot) => (
+                <li>{spot}</li>
+              ))}
+            </ul>
+          </div>
+
+          <a href="/fishing-report" class="btn btn--primary">
+            Read Full Report
+          </a>
+        </div>
+
+        <div class="fishing-feature__signup">
+          <NewsletterSignup
+            title="Get Weekly Fishing Reports"
+            description="Join thousands of anglers who get our weekly Mille Lacs fishing report delivered to their inbox every Friday."
+            buttonText="Subscribe Free"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Directory Preview -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-header text-center">
+        <h2>Explore Mille Lacs</h2>
+        <p>Find the best resorts, restaurants, guides, and services around the lake.</p>
+      </div>
+
+      <div class="directory-categories">
+        <a href="/directory/resorts" class="category-card">
+          <span class="category-card__icon">🏠</span>
+          <span class="category-card__name">Resorts & Lodging</span>
+        </a>
+        <a href="/directory/restaurants" class="category-card">
+          <span class="category-card__icon">🍽️</span>
+          <span class="category-card__name">Restaurants & Bars</span>
+        </a>
+        <a href="/directory/guides" class="category-card">
+          <span class="category-card__icon">🎣</span>
+          <span class="category-card__name">Fishing Guides</span>
+        </a>
+        <a href="/directory/boat-rentals" class="category-card">
+          <span class="category-card__icon">⛵</span>
+          <span class="category-card__name">Boat Rentals</span>
+        </a>
+        <a href="/directory/bait-shops" class="category-card">
+          <span class="category-card__icon">🪱</span>
+          <span class="category-card__name">Bait & Tackle</span>
+        </a>
+        <a href="/directory/services" class="category-card">
+          <span class="category-card__icon">🔧</span>
+          <span class="category-card__name">Home Services</span>
+        </a>
+      </div>
+
+      <div class="featured-businesses">
+        <h3>Featured Businesses</h3>
+        <div class="grid grid--3">
+          {featuredBusinesses.map((business) => (
+            <a href={business.href} class="card">
+              <div class="card__content">
+                <span class="badge">{business.category}</span>
+                <h4 class="card__title">{business.name}</h4>
+                <p>{business.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div class="text-center" style="margin-top: var(--space-xl);">
+          <a href="/directory" class="btn btn--outline">View All Businesses</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events & Guides -->
+  <section class="section">
+    <div class="container">
+      <div class="two-col-grid">
+        <div class="events-preview">
+          <h2>Upcoming Events</h2>
+          <div class="events-list">
+            {upcomingEvents.map((event) => (
+              <a href={event.href} class="event-item">
+                <div class="event-item__date">
+                  <span class="event-item__month">{event.date.split(' ')[0]}</span>
+                  <span class="event-item__day">{event.date.split(' ')[1].replace(',', '')}</span>
+                </div>
+                <div class="event-item__details">
+                  <h4>{event.title}</h4>
+                  <p>{event.location}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+          <a href="/events" class="btn btn--outline" style="margin-top: var(--space-lg);">View All Events</a>
+        </div>
+
+        <div class="guides-preview">
+          <h2>Visitor Guides</h2>
+          <div class="guides-list">
+            <a href="/guides/visitor-guide" class="guide-card">
+              <h4>First Time at Mille Lacs?</h4>
+              <p>Everything you need to know for your first visit.</p>
+            </a>
+            <a href="/guides/ice-fishing" class="guide-card">
+              <h4>Ice Fishing Guide</h4>
+              <p>Tips, gear, and the best spots for winter fishing.</p>
+            </a>
+            <a href="/guides/boat-launches" class="guide-card">
+              <h4>Boat Launch Locations</h4>
+              <p>All public launches around the lake with directions.</p>
+            </a>
+          </div>
+          <a href="/guides" class="btn btn--outline" style="margin-top: var(--space-lg);">View All Guides</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="container text-center">
+      <h2>Stay Connected to the Lake</h2>
+      <p>Get weekly fishing reports, event updates, and local news delivered to your inbox.</p>
+      <a href="/subscribe" class="btn btn--accent btn--large">Subscribe to Our Newsletter</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero */
+  .hero {
+    min-height: 70vh;
+    background-color: var(--forest-dark);
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  /* Fishing Feature */
+  .fishing-feature {
+    background: linear-gradient(135deg, var(--forest-dark) 0%, var(--lake-deep) 100%);
+    color: var(--white);
+    padding: var(--space-3xl) 0;
+  }
+
+  .fishing-feature__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+
+  .fishing-feature h2 {
+    color: var(--white);
+    margin-top: var(--space-sm);
+  }
+
+  .fishing-feature__date {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: var(--space-md);
+  }
+
+  .fishing-feature__summary {
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .fishing-feature__conditions {
+    display: flex;
+    gap: var(--space-xl);
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+  }
+
+  .condition {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .condition__label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    margin-bottom: var(--space-xs);
+  }
+
+  .condition__value {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .fishing-feature__spots h4 {
+    color: var(--white);
+    font-size: 1rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .fishing-feature__spots ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-xl) 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .fishing-feature__spots li {
+    background: rgba(255, 255, 255, 0.15);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+  }
+
+  /* Directory Categories */
+  .section-header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .section-header p {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .directory-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-3xl);
+  }
+
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    background: var(--white);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+  }
+
+  .category-card__icon {
+    font-size: 2rem;
+  }
+
+  .category-card__name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .featured-businesses h3 {
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Events & Guides */
+  .two-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3xl);
+  }
+
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .event-item {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--cream-dark);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text);
+    transition: background var(--transition-fast);
+  }
+
+  .event-item:hover {
+    background: var(--cream);
+    text-decoration: none;
+  }
+
+  .event-item__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    padding: var(--space-sm);
+    background: var(--accent);
+    color: var(--white);
+    border-radius: var(--radius-sm);
+  }
+
+  .event-item__month {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .event-item__day {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .event-item__details h4 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 1rem;
+  }
+
+  .event-item__details p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+
+  .guides-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .guide-card {
+    padding: var(--space-lg);
+    background: var(--cream-dark);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text);
+    border-left: 4px solid var(--primary);
+    transition: background var(--transition-fast);
+  }
+
+  .guide-card:hover {
+    background: var(--cream);
+    text-decoration: none;
+  }
+
+  .guide-card h4 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 1rem;
+    color: var(--primary);
+  }
+
+  .guide-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  /* Final CTA */
+  .final-cta {
+    background: var(--lake-deep);
+    color: var(--white);
+    padding: var(--space-3xl) 0;
+  }
+
+  .final-cta h2 {
+    color: var(--white);
+  }
+
+  .final-cta p {
+    opacity: 0.9;
+    margin-bottom: var(--space-xl);
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .fishing-feature__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .two-col-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .fishing-feature__conditions {
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .hero__actions {
+      flex-direction: column;
+    }
+
+    .hero__actions .btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>

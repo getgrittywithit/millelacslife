@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://millelacslife.com/sitemap-index.xml

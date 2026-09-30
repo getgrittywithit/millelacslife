@@ -1,0 +1,226 @@
+---
+const navItems = [
+  { label: 'Fishing Report', href: '/fishing-report' },
+  { label: 'Directory', href: '/directory' },
+  { label: 'Guides', href: '/guides' },
+  { label: 'Events', href: '/events' },
+  { label: 'News', href: '/news' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="header__container container">
+    <a href="/" class="header__logo">
+      <span class="header__logo-icon">🌲</span>
+      <span class="header__logo-text">
+        <span class="header__logo-main">Mille Lacs Life</span>
+        <span class="header__logo-tagline">Lake Living & Vacation Guide</span>
+      </span>
+    </a>
+
+    <button class="header__menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span class="header__menu-icon"></span>
+    </button>
+
+    <nav class="header__nav" aria-label="Main navigation">
+      <ul class="header__nav-list">
+        {navItems.map((item) => (
+          <li class="header__nav-item">
+            <a
+              href={item.href}
+              class:list={[
+                'header__nav-link',
+                { 'header__nav-link--active': currentPath.startsWith(item.href) }
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a href="/subscribe" class="btn btn--accent header__cta">
+        Get Fishing Reports
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .header__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    gap: var(--space-lg);
+  }
+
+  .header__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+    color: var(--forest-dark);
+  }
+
+  .header__logo:hover {
+    text-decoration: none;
+  }
+
+  .header__logo-icon {
+    font-size: 2rem;
+  }
+
+  .header__logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header__logo-main {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .header__logo-tagline {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+  }
+
+  .header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .header__nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header__nav-link {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    color: var(--text);
+    padding: var(--space-sm) var(--space-sm);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .header__nav-link:hover {
+    color: var(--primary);
+    text-decoration: none;
+    background-color: var(--cream-dark);
+  }
+
+  .header__nav-link--active {
+    color: var(--primary);
+    background-color: var(--cream-dark);
+  }
+
+  .header__cta {
+    white-space: nowrap;
+  }
+
+  .header__menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-sm);
+  }
+
+  .header__menu-icon {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text);
+    position: relative;
+  }
+
+  .header__menu-icon::before,
+  .header__menu-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text);
+    left: 0;
+  }
+
+  .header__menu-icon::before {
+    top: -8px;
+  }
+
+  .header__menu-icon::after {
+    top: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .header__menu-toggle {
+      display: block;
+    }
+
+    .header__nav {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      flex-direction: column;
+      background: var(--white);
+      padding: var(--space-xl);
+      gap: var(--space-xl);
+      transform: translateX(100%);
+      transition: transform var(--transition-normal);
+    }
+
+    .header__nav.is-open {
+      transform: translateX(0);
+    }
+
+    .header__nav-list {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .header__nav-link {
+      display: block;
+      padding: var(--space-md);
+      text-align: center;
+      font-size: 1.125rem;
+    }
+
+    .header__cta {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('.header__menu-toggle');
+  const nav = document.querySelector('.header__nav');
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+</script>

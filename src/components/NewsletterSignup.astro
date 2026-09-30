@@ -1,0 +1,244 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  buttonText?: string;
+  variant?: 'default' | 'compact' | 'inline';
+  source?: string;
+}
+
+const {
+  title = 'Stay Connected',
+  description = 'Get the latest fishing reports, events, and news delivered to your inbox.',
+  buttonText = 'Subscribe',
+  variant = 'default',
+  source = 'website',
+} = Astro.props;
+
+const formId = `newsletter-form-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class:list={['newsletter', `newsletter--${variant}`]} data-newsletter>
+  {variant !== 'inline' && (
+    <div class="newsletter__header">
+      <h3 class="newsletter__title">{title}</h3>
+      {description && <p class="newsletter__description">{description}</p>}
+    </div>
+  )}
+
+  <form class="newsletter__form" id={formId} data-source={source}>
+    <div class="newsletter__fields">
+      <label for={`${formId}-email`} class="sr-only">Email address</label>
+      <input
+        type="email"
+        name="email"
+        id={`${formId}-email`}
+        placeholder="Enter your email"
+        required
+        class="newsletter__input"
+        autocomplete="email"
+      />
+      <button type="submit" class="btn btn--accent newsletter__button">
+        <span class="newsletter__button-text">{buttonText}</span>
+        <span class="newsletter__button-loading" hidden>Subscribing...</span>
+      </button>
+    </div>
+
+    <p class="newsletter__message" hidden></p>
+
+    <p class="newsletter__privacy">
+      We respect your privacy. Unsubscribe anytime.
+    </p>
+  </form>
+</div>
+
+<style>
+  .newsletter {
+    background: var(--white);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .newsletter__header {
+    margin-bottom: var(--space-lg);
+  }
+
+  .newsletter__title {
+    color: var(--forest-dark);
+    font-size: 1.25rem;
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .newsletter__description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .newsletter__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .newsletter__fields {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .newsletter__input {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border: 2px solid var(--cream-dark);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+  }
+
+  .newsletter__input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .newsletter__input::placeholder {
+    color: var(--stone);
+  }
+
+  .newsletter__input:disabled {
+    background-color: var(--cream-dark);
+    cursor: not-allowed;
+  }
+
+  .newsletter__button {
+    white-space: nowrap;
+  }
+
+  .newsletter__button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .newsletter__message {
+    font-size: 0.875rem;
+    margin: 0;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+  }
+
+  .newsletter__message--success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .newsletter__message--error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .newsletter__privacy {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Compact variant */
+  .newsletter--compact {
+    padding: var(--space-lg);
+  }
+
+  .newsletter--compact .newsletter__title {
+    font-size: 1.1rem;
+  }
+
+  .newsletter--compact .newsletter__fields {
+    flex-direction: column;
+  }
+
+  /* Inline variant */
+  .newsletter--inline {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .newsletter--inline .newsletter__fields {
+    flex-direction: row;
+  }
+
+  .newsletter--inline .newsletter__privacy {
+    display: none;
+  }
+
+  @media (max-width: 500px) {
+    .newsletter__fields {
+      flex-direction: column;
+    }
+
+    .newsletter__button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-newsletter] form').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formEl = e.target as HTMLFormElement;
+      const emailInput = formEl.querySelector('input[type="email"]') as HTMLInputElement;
+      const submitBtn = formEl.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const buttonText = submitBtn.querySelector('.newsletter__button-text') as HTMLElement;
+      const buttonLoading = submitBtn.querySelector('.newsletter__button-loading') as HTMLElement;
+      const messageEl = formEl.querySelector('.newsletter__message') as HTMLElement;
+      const source = formEl.dataset.source || 'website';
+
+      // Reset state
+      messageEl.hidden = true;
+      messageEl.className = 'newsletter__message';
+
+      // Show loading
+      emailInput.disabled = true;
+      submitBtn.disabled = true;
+      buttonText.hidden = true;
+      buttonLoading.hidden = false;
+
+      try {
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: emailInput.value,
+            source,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          messageEl.textContent = data.message || 'Successfully subscribed!';
+          messageEl.classList.add('newsletter__message--success');
+          emailInput.value = '';
+        } else {
+          messageEl.textContent = data.error || 'Something went wrong. Please try again.';
+          messageEl.classList.add('newsletter__message--error');
+        }
+
+        messageEl.hidden = false;
+
+      } catch (error) {
+        messageEl.textContent = 'Network error. Please check your connection and try again.';
+        messageEl.classList.add('newsletter__message--error');
+        messageEl.hidden = false;
+      } finally {
+        emailInput.disabled = false;
+        submitBtn.disabled = false;
+        buttonText.hidden = false;
+        buttonLoading.hidden = true;
+      }
+    });
+  });
+</script>
