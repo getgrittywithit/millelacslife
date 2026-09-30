@@ -1,0 +1,754 @@
+---
+export const prerender = false;
+
+// Check authentication
+const session = Astro.cookies.get('admin_session');
+if (!session?.value) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Mille Lacs Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cabin', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .admin-header {
+      background: #1e3a2f;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-header h1 {
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .header-actions a {
+      color: white;
+      text-decoration: none;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    .header-actions a:hover {
+      opacity: 1;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h2 {
+      color: #1e3a2f;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #2d5a47;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1e3a2f;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .stat-card h3 {
+      font-size: 2rem;
+      color: #1e3a2f;
+    }
+
+    .stat-card p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-header h3 {
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .filters {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .filter-btn.active {
+      background: #2d5a47;
+      color: white;
+      border-color: #2d5a47;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #fafafa;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #666;
+    }
+
+    td {
+      font-size: 0.9rem;
+    }
+
+    tr:hover td {
+      background: #fafafa;
+    }
+
+    .business-name {
+      font-weight: 600;
+      color: #1e3a2f;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-published {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-draft {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge-featured {
+      background: #e07b39;
+      color: white;
+    }
+
+    .category-badge {
+      background: #e8f4f8;
+      color: #1a4d5c;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      margin: 1rem;
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      color: #1e3a2f;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2d5a47;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .checkbox-group input {
+      width: auto;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <h1>🌲 Mille Lacs Life Admin</h1>
+    <div class="header-actions">
+      <a href="/" target="_blank">View Site →</a>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h2>Business Directory</h2>
+      <button class="btn btn-primary" id="add-btn">+ Add Business</button>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat-card">
+        <h3 id="total-count">-</h3>
+        <p>Total Listings</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="published-count">-</h3>
+        <p>Published</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="featured-count">-</h3>
+        <p>Featured</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="draft-count">-</h3>
+        <p>Drafts</p>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">
+        <h3>All Businesses</h3>
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="published">Published</button>
+          <button class="filter-btn" data-filter="draft">Drafts</button>
+          <button class="filter-btn" data-filter="featured">Featured</button>
+        </div>
+      </div>
+
+      <div id="loading" class="loading">Loading businesses...</div>
+
+      <table id="businesses-table" style="display: none;">
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="businesses-body"></tbody>
+      </table>
+
+      <div id="empty" class="empty" style="display: none;">
+        No businesses found. Click "Add Business" to create one.
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Business</h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <form id="business-form">
+        <div class="modal-body">
+          <input type="hidden" id="business-id">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Business Name *</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <select id="category" name="category" required>
+                <option value="">Select category</option>
+                <option value="resort">Resort & Lodging</option>
+                <option value="restaurant">Restaurant & Bar</option>
+                <option value="guide">Fishing Guide</option>
+                <option value="boat-rental">Boat Rental</option>
+                <option value="bait-shop">Bait & Tackle</option>
+                <option value="marina">Marina</option>
+                <option value="real-estate">Real Estate</option>
+                <option value="service">Home Service</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Short Description *</label>
+            <textarea id="description" name="description" required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" id="address" name="address">
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input type="text" id="city" name="city" placeholder="e.g. Isle, MN 56342">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" name="phone" placeholder="(320) 555-1234">
+            </div>
+            <div class="form-group">
+              <label for="website">Website</label>
+              <input type="url" id="website" name="website" placeholder="https://...">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="location">Lake Location</label>
+              <select id="location" name="location">
+                <option value="">Select location</option>
+                <option value="north-shore">North Shore</option>
+                <option value="south-shore">South Shore</option>
+                <option value="east-shore">East Shore</option>
+                <option value="west-shore">West Shore</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="featured" name="featured">
+              <label for="featured" style="margin: 0;">Featured Listing</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-btn">Save Business</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let businesses: any[] = [];
+    let currentFilter = 'all';
+    let editingId: string | null = null;
+
+    const modal = document.getElementById('modal') as HTMLElement;
+    const form = document.getElementById('business-form') as HTMLFormElement;
+    const modalTitle = document.getElementById('modal-title') as HTMLElement;
+    const loadingEl = document.getElementById('loading') as HTMLElement;
+    const tableEl = document.getElementById('businesses-table') as HTMLElement;
+    const emptyEl = document.getElementById('empty') as HTMLElement;
+    const tbody = document.getElementById('businesses-body') as HTMLElement;
+
+    // Load businesses
+    async function loadBusinesses() {
+      try {
+        const response = await fetch('/api/admin/businesses');
+        if (!response.ok) throw new Error('Failed to load');
+        businesses = await response.json();
+        updateStats();
+        renderTable();
+      } catch (error) {
+        loadingEl.textContent = 'Error loading businesses';
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('total-count')!.textContent = businesses.length.toString();
+      document.getElementById('published-count')!.textContent = businesses.filter(b => b.status === 'published').length.toString();
+      document.getElementById('featured-count')!.textContent = businesses.filter(b => b.featured).length.toString();
+      document.getElementById('draft-count')!.textContent = businesses.filter(b => b.status === 'draft').length.toString();
+    }
+
+    function getFilteredBusinesses() {
+      if (currentFilter === 'all') return businesses;
+      if (currentFilter === 'published') return businesses.filter(b => b.status === 'published');
+      if (currentFilter === 'draft') return businesses.filter(b => b.status === 'draft');
+      if (currentFilter === 'featured') return businesses.filter(b => b.featured);
+      return businesses;
+    }
+
+    function renderTable() {
+      const filtered = getFilteredBusinesses();
+      loadingEl.style.display = 'none';
+
+      if (filtered.length === 0) {
+        tableEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      tableEl.style.display = 'table';
+
+      tbody.innerHTML = filtered.map(b => `
+        <tr>
+          <td>
+            <div class="business-name">${escapeHtml(b.name)}</div>
+            <div style="font-size: 0.8rem; color: #666;">${escapeHtml(b.city || '')}</div>
+          </td>
+          <td><span class="badge category-badge">${b.category}</span></td>
+          <td>${b.location || '-'}</td>
+          <td>
+            <span class="badge badge-${b.status}">${b.status}</span>
+            ${b.featured ? '<span class="badge badge-featured" style="margin-left: 0.25rem;">Featured</span>' : ''}
+          </td>
+          <td class="actions">
+            <button class="btn btn-secondary btn-sm" onclick="editBusiness('${b.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteBusiness('${b.id}', '${escapeHtml(b.name)}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(text: string) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = (btn as HTMLElement).dataset.filter || 'all';
+        renderTable();
+      });
+    });
+
+    // Add button
+    document.getElementById('add-btn')!.addEventListener('click', () => {
+      editingId = null;
+      modalTitle.textContent = 'Add Business';
+      form.reset();
+      (document.getElementById('status') as HTMLSelectElement).value = 'draft';
+      modal.classList.add('show');
+    });
+
+    // Edit business
+    (window as any).editBusiness = (id: string) => {
+      const business = businesses.find(b => b.id === id);
+      if (!business) return;
+
+      editingId = id;
+      modalTitle.textContent = 'Edit Business';
+
+      (document.getElementById('business-id') as HTMLInputElement).value = id;
+      (document.getElementById('name') as HTMLInputElement).value = business.name || '';
+      (document.getElementById('category') as HTMLSelectElement).value = business.category || '';
+      (document.getElementById('description') as HTMLTextAreaElement).value = business.description || '';
+      (document.getElementById('address') as HTMLInputElement).value = business.address || '';
+      (document.getElementById('city') as HTMLInputElement).value = business.city || '';
+      (document.getElementById('phone') as HTMLInputElement).value = business.phone || '';
+      (document.getElementById('website') as HTMLInputElement).value = business.website || '';
+      (document.getElementById('location') as HTMLSelectElement).value = business.location || '';
+      (document.getElementById('status') as HTMLSelectElement).value = business.status || 'draft';
+      (document.getElementById('featured') as HTMLInputElement).checked = business.featured || false;
+
+      modal.classList.add('show');
+    };
+
+    // Delete business
+    (window as any).deleteBusiness = async (id: string, name: string) => {
+      if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+
+      try {
+        const response = await fetch(`/api/admin/businesses/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Delete failed');
+        await loadBusinesses();
+      } catch (error) {
+        alert('Failed to delete business');
+      }
+    };
+
+    // Close modal
+    document.getElementById('modal-close')!.addEventListener('click', () => modal.classList.remove('show'));
+    document.getElementById('cancel-btn')!.addEventListener('click', () => modal.classList.remove('show'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('show');
+    });
+
+    // Submit form
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data: any = {
+        name: (document.getElementById('name') as HTMLInputElement).value,
+        category: (document.getElementById('category') as HTMLSelectElement).value,
+        description: (document.getElementById('description') as HTMLTextAreaElement).value,
+        address: (document.getElementById('address') as HTMLInputElement).value || null,
+        city: (document.getElementById('city') as HTMLInputElement).value || null,
+        phone: (document.getElementById('phone') as HTMLInputElement).value || null,
+        website: (document.getElementById('website') as HTMLInputElement).value || null,
+        location: (document.getElementById('location') as HTMLSelectElement).value || null,
+        status: (document.getElementById('status') as HTMLSelectElement).value,
+        featured: (document.getElementById('featured') as HTMLInputElement).checked,
+      };
+
+      const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const url = editingId ? `/api/admin/businesses/${editingId}` : '/api/admin/businesses';
+        const method = editingId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Save failed');
+        }
+
+        modal.classList.remove('show');
+        await loadBusinesses();
+      } catch (error: any) {
+        alert(error.message || 'Failed to save business');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Business';
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-btn')!.addEventListener('click', async () => {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      window.location.href = '/admin/login';
+    });
+
+    // Initial load
+    loadBusinesses();
+  </script>
+</body>
+</html>
